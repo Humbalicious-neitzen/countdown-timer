@@ -10,7 +10,7 @@ DEADLINE = datetime(2026, 4, 15, 21, 0, 0, tzinfo=timezone(timedelta(hours=5)))
 BG_COLOR = (217, 217, 219)
 NUMBER_COLOR = (255, 0, 21)
 LABEL_COLOR = (0, 0, 0)
-WIDTH, HEIGHT = 500, 120
+WIDTH, HEIGHT = 600, 160
 
 def generate_gif():
     now = datetime.now(tz=timezone(timedelta(hours=5)))
@@ -28,8 +28,8 @@ def generate_gif():
     draw = ImageDraw.Draw(img)
 
     try:
-        number_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 60)
-        label_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 16)
+        number_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 90)
+        label_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 20)
     except:
         number_font = ImageFont.load_default()
         label_font = ImageFont.load_default()
@@ -46,11 +46,12 @@ def generate_gif():
 
         num_bbox = draw.textbbox((0, 0), num, font=number_font)
         num_w = num_bbox[2] - num_bbox[0]
-        draw.text((x_center - num_w // 2, 10), num, font=number_font, fill=NUMBER_COLOR)
+        num_h = num_bbox[3] - num_bbox[1]
+        draw.text((x_center - num_w // 2, 15), num, font=number_font, fill=NUMBER_COLOR)
 
         label_bbox = draw.textbbox((0, 0), label, font=label_font)
         label_w = label_bbox[2] - label_bbox[0]
-        draw.text((x_center - label_w // 2, 82), label, font=label_font, fill=LABEL_COLOR)
+        draw.text((x_center - label_w // 2, 15 + num_h + 8), label, font=label_font, fill=LABEL_COLOR)
 
     buf = io.BytesIO()
     img.save(buf, format="GIF")
