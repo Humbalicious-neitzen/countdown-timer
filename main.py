@@ -9,7 +9,7 @@ DEADLINE = datetime(2026, 4, 15, 21, 0, 0, tzinfo=timezone(timedelta(hours=5)))
 BG_COLOR = (217, 217, 219)
 NUMBER_COLOR = (255, 0, 21)
 LABEL_COLOR = (0, 0, 0)
-WIDTH, HEIGHT = 700, 150
+WIDTH, HEIGHT = 700, 120
 
 FONT_BOLD_PATH = "/tmp/RobotoBold.ttf"
 FONT_REG_PATH = "/tmp/RobotoReg.ttf"
@@ -41,8 +41,8 @@ def generate_gif():
 
     try:
         download_fonts()
-        number_font = ImageFont.truetype(FONT_BOLD_PATH, 80)
-        label_font = ImageFont.truetype(FONT_REG_PATH, 18)
+        number_font = ImageFont.truetype(FONT_BOLD_PATH, 90)
+        label_font = ImageFont.truetype(FONT_REG_PATH, 22)
     except:
         number_font = ImageFont.load_default(size=60)
         label_font = ImageFont.load_default(size=16)
@@ -60,17 +60,23 @@ def generate_gif():
             (f"{sec:02d}", "Secs"),
         ]
 
-        col_width = WIDTH // 4
-        for i, (num, label) in enumerate(sections):
-            x_center = col_width * i + col_width // 2
-
+        x = 30
+        for num, label in sections:
             num_bbox = draw.textbbox((0, 0), num, font=number_font)
             num_w = num_bbox[2] - num_bbox[0]
-            draw.text((x_center - num_w // 2, 10), num, font=number_font, fill=NUMBER_COLOR)
-
+            num_h = num_bbox[3] - num_bbox[1]
+            
+            # Draw number
+            draw.text((x, 15), num, font=number_font, fill=NUMBER_COLOR)
+            
+            # Draw label right next to number, vertically centered
             label_bbox = draw.textbbox((0, 0), label, font=label_font)
+            label_h = label_bbox[3] - label_bbox[1]
+            label_y = 15 + num_h - label_h - 5
+            draw.text((x + num_w + 8, label_y), label, font=label_font, fill=LABEL_COLOR)
+            
             label_w = label_bbox[2] - label_bbox[0]
-            draw.text((x_center - label_w // 2, 118), label, font=label_font, fill=LABEL_COLOR)
+            x += num_w + label_w + 40
 
         frames.append(img)
 
