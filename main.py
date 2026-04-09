@@ -1,18 +1,29 @@
 from flask import Flask, send_file
 from PIL import Image, ImageDraw, ImageFont
-import io
+import io, os, urllib.request
 from datetime import datetime, timezone, timedelta
 
 app = Flask(__name__)
 
 DEADLINE = datetime(2026, 4, 15, 21, 0, 0, tzinfo=timezone(timedelta(hours=5)))
-
 BG_COLOR = (217, 217, 219)
 NUMBER_COLOR = (255, 0, 21)
 LABEL_COLOR = (0, 0, 0)
-WIDTH, HEIGHT = 700, 160
+WIDTH, HEIGHT = 700, 200
+
+FONT_URL_BOLD = "https://github.com/google/fonts/raw/main/apache/roboto/Roboto-Bold.ttf"
+FONT_URL_REG = "https://github.com/google/fonts/raw/main/apache/roboto/Roboto-Regular.ttf"
+FONT_BOLD_PATH = "/tmp/Roboto-Bold.ttf"
+FONT_REG_PATH = "/tmp/Roboto-Regular.ttf"
+
+def download_fonts():
+    if not os.path.exists(FONT_BOLD_PATH):
+        urllib.request.urlretrieve(FONT_URL_BOLD, FONT_BOLD_PATH)
+    if not os.path.exists(FONT_REG_PATH):
+        urllib.request.urlretrieve(FONT_URL_REG, FONT_REG_PATH)
 
 def generate_gif():
+    download_fonts()
     frames = []
     now = datetime.now(tz=timezone(timedelta(hours=5)))
     diff = DEADLINE - now
@@ -31,12 +42,8 @@ def generate_gif():
         img = Image.new("RGB", (WIDTH, HEIGHT), BG_COLOR)
         draw = ImageDraw.Draw(img)
 
-        try:
-            number_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 85)
-            label_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 18)
-        except:
-            number_font = ImageFont.load_default()
-            label_font = ImageFont.load_default()
+        number_font = ImageFont.truetype(FONT_BOLD_PATH, 100)
+        label_font = ImageFont.truetype(FONT_REG_PATH, 22)
 
         sections = [
             (f"{days:02d}", "Days"),
@@ -52,11 +59,11 @@ def generate_gif():
             num_bbox = draw.textbbox((0, 0), num, font=number_font)
             num_w = num_bbox[2] - num_bbox[0]
             num_h = num_bbox[3] - num_bbox[1]
-            draw.text((x_center - num_w // 2, 15), num, font=number_font, fill=NUMBER_COLOR)
+            draw.text((x_center - num_w // 2, 20), num, font=number_font, fill=NUMBER_COLOR)
 
             label_bbox = draw.textbbox((0, 0), label, font=label_font)
             label_w = label_bbox[2] - label_bbox[0]
-            draw.text((x_center - label_w // 2, 15 + num_h + 8), label, font=label_font, fill=LABEL_COLOR)
+            draw.text((x_center - label_w // 2, 20 + num_h + 10), label, font=label_font, fill=LABEL_COLOR)
 
         frames.append(img)
 
