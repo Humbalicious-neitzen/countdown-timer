@@ -16,10 +16,15 @@ FONT_REG_PATH = "/tmp/RobotoReg.ttf"
 
 def download_fonts():
     if not os.path.exists(FONT_BOLD_PATH):
-        urllib.request.urlretrieve("https://fonts.gstatic.com/s/roboto/v30/KFOlCnqEu92Fr1MmWUlfBBc4.woff2", FONT_BOLD_PATH)
+        urllib.request.urlretrieve(
+            "https://github.com/google/fonts/raw/main/apache/roboto/Roboto-Bold.ttf",
+            FONT_BOLD_PATH
+        )
     if not os.path.exists(FONT_REG_PATH):
-        urllib.request.urlretrieve("https://fonts.gstatic.com/s/roboto/v30/KFOmCnqEu92Fr1Mu4mxK.woff2", FONT_REG_PATH)
-
+        urllib.request.urlretrieve(
+            "https://github.com/google/fonts/raw/main/apache/roboto/Roboto-Regular.ttf",
+            FONT_REG_PATH
+        )
 def generate_gif():
     now = datetime.now(tz=timezone(timedelta(hours=5)))
     diff = DEADLINE - now
@@ -72,4 +77,5 @@ def home():
     return "Timer is running."
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080)
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host="0.0.0.0", port=port)
