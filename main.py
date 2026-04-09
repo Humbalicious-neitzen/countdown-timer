@@ -11,20 +11,22 @@ NUMBER_COLOR = (255, 0, 21)
 LABEL_COLOR = (0, 0, 0)
 WIDTH, HEIGHT = 700, 200
 
-FONT_URL_BOLD = "https://github.com/google/fonts/raw/main/apache/roboto/Roboto-Bold.ttf"
-FONT_URL_REG = "https://github.com/google/fonts/raw/main/apache/roboto/Roboto-Regular.ttf"
-FONT_BOLD_PATH = "/tmp/Roboto-Bold.ttf"
-FONT_REG_PATH = "/tmp/Roboto-Regular.ttf"
+FONT_BOLD_PATH = "/tmp/RobotoBold.ttf"
+FONT_REG_PATH = "/tmp/RobotoReg.ttf"
 
 def download_fonts():
     if not os.path.exists(FONT_BOLD_PATH):
-        urllib.request.urlretrieve(FONT_URL_BOLD, FONT_BOLD_PATH)
+        urllib.request.urlretrieve(
+            "https://fonts.gstatic.com/s/roboto/v30/KFOlCnqEu92Fr1MmWUlfBBc4.woff2",
+            FONT_BOLD_PATH
+        )
     if not os.path.exists(FONT_REG_PATH):
-        urllib.request.urlretrieve(FONT_URL_REG, FONT_REG_PATH)
+        urllib.request.urlretrieve(
+            "https://fonts.gstatic.com/s/roboto/v30/KFOmCnqEu92Fr1Mu4mxK.woff2",
+            FONT_REG_PATH
+        )
 
 def generate_gif():
-    download_fonts()
-    frames = []
     now = datetime.now(tz=timezone(timedelta(hours=5)))
     diff = DEADLINE - now
 
@@ -37,13 +39,19 @@ def generate_gif():
         minutes = (total_seconds % 3600) // 60
         seconds = total_seconds % 60
 
+    try:
+        download_fonts()
+        number_font = ImageFont.truetype(FONT_BOLD_PATH, 100)
+        label_font = ImageFont.truetype(FONT_REG_PATH, 22)
+    except:
+        number_font = ImageFont.load_default(size=80)
+        label_font = ImageFont.load_default(size=20)
+
+    frames = []
     for s in range(seconds, seconds - 2, -1):
         sec = max(s, 0)
         img = Image.new("RGB", (WIDTH, HEIGHT), BG_COLOR)
         draw = ImageDraw.Draw(img)
-
-        number_font = ImageFont.truetype(FONT_BOLD_PATH, 100)
-        label_font = ImageFont.truetype(FONT_REG_PATH, 22)
 
         sections = [
             (f"{days:02d}", "Days"),
